@@ -27,7 +27,7 @@ exports.updateStatus = (req, res) => {
   const id = req.params.id;
   const { status } = req.body;
 
-  if (!status) {
+  if (status === undefined || status === null) {
     return res.status(400).send({
       message: "Status cannot be empty!"
     });
