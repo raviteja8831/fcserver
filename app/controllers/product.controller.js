@@ -21,7 +21,20 @@ exports.findAll = (req, res) => {
       });
     });
 };
+exports.getAll = (req, res) => {
 
+
+  Product.getAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tutorials."
+      });
+    });
+};
 // Update the status of a Product by ID
 exports.updateStatus = (req, res) => {
   const id = req.params.id;
