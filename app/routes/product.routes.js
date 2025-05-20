@@ -6,9 +6,9 @@ module.exports = app => {
 
   // Retrieve all Orders
   router.get("/", products.findAll);
+    router.get("/api/products/all", products.getAll);
 
   app.use("/api/products", router);
-    app.use("/api/products/all", products.getAll);
 
   router.put("/:id/status", products.updateStatus);
 
