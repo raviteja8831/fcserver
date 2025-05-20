@@ -24,7 +24,7 @@ exports.findAll = (req, res) => {
 exports.getAll = (req, res) => {
 
 
-  Product.getAll()
+  Product.findAll()
     .then(data => {
       res.send(data);
     })
