@@ -121,8 +121,8 @@ exports.updateSupplyDate = async (req, res) => {
     const supplyDate = await SupplyDate.findByPk(id);
     if (supplyDate) {
       // Update existing supply date
-      supplyDate.supplyDate = date;
-      await supplyDate.save();
+      supplyDate.supplydate = date;
+      await supplyate.save();
     } else {
       // Create a new supply date if none exists
       res.status(500).send({ message: error.message });
