@@ -122,7 +122,7 @@ exports.updateSupplyDate = async (req, res) => {
     if (supplyDate) {
       // Update existing supply date
       supplyDate.supplydate = date;
-      await supplyate.save();
+      await supplyDate.save();
     } else {
       // Create a new supply date if none exists
       res.status(500).send({ message: error.message });
