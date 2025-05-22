@@ -49,12 +49,33 @@ exports.getOrdersByRole = async (req, res) => {
 };
 
 // Create a new order
+// Create a new order
 exports.createOrder = async (req, res) => {
   try {
     const { userId, products } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required to create an order" });
+    }
+
+    // Define today's start and end times
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // Check if an order for today already exists for this user
+    const existingOrder = await Order.findOne({
+      where: {
+        user_id: userId,
+        createdAt: {
+          [Op.between]: [todayStart, todayEnd]
+        }
+      }
+    });
+
+    if (existingOrder) {
+      return res.status(400).json({ message: "Order already placed today" });
     }
 
     // Save the order
