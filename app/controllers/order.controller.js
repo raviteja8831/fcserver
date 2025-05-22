@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize");
 const Order = db.orders;
 const User = db.users;
 const Role = db.roles;
