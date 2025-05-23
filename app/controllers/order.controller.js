@@ -176,7 +176,7 @@ exports.updateOrder = async (req, res) => {
           {
             returned_quantity: product.returned_quantity || 0,
             recieved_quantity: product.recieved_quantity || 0,
-            quantity: product.quantity || 0,
+            quantity: product.quantity || 0
 
           },
           { where: { order_id: orderId, product_id: product.product_id } }
