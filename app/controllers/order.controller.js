@@ -170,7 +170,7 @@ exports.updateOrder = async (req, res) => {
     await Order.update({ status }, { where: { id: orderId } });
 
     // Update returned quantities for products if status is 'returned' or 'received'
-    if ((status === "returned" || status === "received") && products && products.length > 0) {
+    if (products && products.length > 0) {
       for (const product of products) {
         await OrderProduct.update(
           {
