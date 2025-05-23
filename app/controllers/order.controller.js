@@ -60,17 +60,20 @@ exports.createOrder = async (req, res) => {
     }
 
     // Define today's start and end times
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+   const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 1); // Move to yesterday
+    startDate.setHours(12, 0, 0, 0);            // Set time to 12:00:00.000 PM
+
+      // End date: Today at 3 PM
+      const endDate = new Date();
+      endDate.setHours(15, 0, 0, 0); // Set time to 3:00:00.000 PM
 
     // Check if an order for today already exists for this user
     const existingOrder = await Order.findOne({
       where: {
         user_id: userId,
         createdAt: {
-          [Op.between]: [todayStart, todayEnd]
+          [Op.between]: [startDate, endDate]
         }
       }
     });

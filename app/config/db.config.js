@@ -5,6 +5,9 @@ module.exports = {
   DB: "frootcity_db",
   dialect: "mysql",
   timezone: "+05:30", // sets the timezone to IST
+  dialectOptions: {
+    useUTC: false,  // tell the MySQL driver not to convert dates to UTC
+  },
   pool: {
     max: 5,
     min: 0,
