@@ -172,15 +172,26 @@ exports.updateOrder = async (req, res) => {
     // Update returned quantities for products if status is 'returned' or 'received'
     if (products && products.length > 0) {
       for (const product of products) {
-        await OrderProduct.update(
+        // Try to update, if not found then insert (upsert logic)
+        const [affectedRows] = await OrderProduct.update(
           {
             returned_quantity: product.returned_quantity || 0,
             recieved_quantity: product.recieved_quantity || 0,
             quantity: product.quantity || 0
-
           },
           { where: { order_id: orderId, product_id: product.product_id } }
         );
+
+        if (affectedRows === 0) {
+          // Only insert if this product is not already associated with the order
+          await OrderProduct.create({
+            order_id: orderId,
+            product_id: product.product_id,
+            returned_quantity: product.returned_quantity || 0,
+            recieved_quantity: product.recieved_quantity || 0,
+            quantity: product.quantity || 0
+          });
+        }
       }
     }
 
