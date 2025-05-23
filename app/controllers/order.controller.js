@@ -194,25 +194,26 @@ exports.updateOrder = async (req, res) => {
 exports.getOrdersByUser = async (req, res) => {
   try {
     const usersWithOrders = await User.findAll({
+      where: { role_id: 2 },
       attributes: ['id', 'username', 'email'],
       include: [
+      {
+        model: Order,
+        as: 'orders',
+        include: [
         {
-          model: Order,
-          as: 'orders',
+          model: OrderProduct,
+          as: 'products',
           include: [
-            {
-              model: OrderProduct,
-              as: 'products',
-              include: [
-                {
-                  model: Product,
-                  as: 'product',
-                  attributes: ['title', 'description', 'category'],
-                }
-              ]
-            }
+          {
+            model: Product,
+            as: 'product',
+            attributes: ['title', 'description', 'category'],
+          }
           ]
         }
+        ]
+      }
       ]
     });
 
