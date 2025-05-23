@@ -4,6 +4,7 @@ module.exports = {
   PASSWORD: "oGO1pAtKTehM3rIyWndQ",
   DB: "frootcity_db",
   dialect: "mysql",
+  timezone: "+05:30", // sets the timezone to IST
   pool: {
     max: 5,
     min: 0,
