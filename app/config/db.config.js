@@ -1,7 +1,7 @@
 module.exports = {
-  HOST: "database-2.cjsqyckyc8sg.ap-south-1.rds.amazonaws.com",
+  HOST: "localhost",
   USER: "admin",
-  PASSWORD: "oGO1pAtKTehM3rIyWndQ",
+  PASSWORD: "",
   DB: "frootcity_db",
   dialect: "mysql",
   timezone: "+05:30", // sets the timezone to IST
