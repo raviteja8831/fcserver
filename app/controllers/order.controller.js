@@ -100,10 +100,19 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// Fetch all orders
+// Fetch all orders with optional date filter
 exports.findAll = async (req, res) => {
   try {
+    const { startDate, endDate } = req.query;
+    let whereCondition = {};
+
+    if (startDate && endDate) {
+      // Filter orders created between startDate and endDate
+      whereCondition.createdAt = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+    }
+
     const orders = await Order.findAll({
+      where: whereCondition,
       include: [
         {
           model: OrderProduct,
@@ -112,14 +121,14 @@ exports.findAll = async (req, res) => {
             {
               model: Product,
               as: "product",
-              attributes: ["title", "description", "category"], // Include product details
+              attributes: ["title", "description", "category"],
             },
           ],
         },
         {
           model: User,
           as: "user",
-          attributes: ["id", "username", "email"], // Include user details
+          attributes: ["id", "username", "email"],
         },
       ],
     });
@@ -129,14 +138,20 @@ exports.findAll = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch orders", error });
   }
 };
-
 // Fetch orders by user ID
+// Fetch orders by user ID with optional date filter
 exports.findByUserId = async (req, res) => {
   const userId = req.params.user_id;
-
   try {
+    const { startDate, endDate } = req.query;
+    let whereCondition = { user_id: userId };
+
+    if (startDate && endDate) {
+      whereCondition.createdAt = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+    }
+
     const orders = await Order.findAll({
-      where: { user_id: userId },
+      where: whereCondition,
       include: [
         {
           model: OrderProduct,
@@ -145,14 +160,14 @@ exports.findByUserId = async (req, res) => {
             {
               model: Product,
               as: "product",
-              attributes: ["title",  "description", "category"], // Include product details
+              attributes: ["title", "description", "category"],
             },
           ],
         },
         {
           model: User,
           as: "user",
-          attributes: ["id", "username", "email"], // Include user details
+          attributes: ["id", "username", "email"],
         },
       ],
     });
@@ -207,30 +222,40 @@ exports.updateOrder = async (req, res) => {
 
 // Add this new method to your existing controller
 
+// Fetch orders by user (for users with role_id: 2) with optional date filter applied to orders
 exports.getOrdersByUser = async (req, res) => {
   try {
+    const { startDate, endDate } = req.query;
+    // Build an orders filter if dates are provided.
+    let ordersWhere = {};
+    if (startDate && endDate) {
+      ordersWhere.createdAt = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+    }
+    // Use "required: false" to return users even if they have no orders within the date filter.
     const usersWithOrders = await User.findAll({
       where: { role_id: 2 },
       attributes: ['id', 'username', 'email'],
       include: [
-      {
-        model: Order,
-        as: 'orders',
-        include: [
         {
-          model: OrderProduct,
-          as: 'products',
+          model: Order,
+          as: 'orders',
+          where: Object.keys(ordersWhere).length ? ordersWhere : undefined,
+          required: false,
           include: [
-          {
-            model: Product,
-            as: 'product',
-            attributes: ['title', 'description', 'category'],
-          }
-          ]
-        }
-        ]
-      }
-      ]
+            {
+              model: OrderProduct,
+              as: 'products',
+              include: [
+                {
+                  model: Product,
+                  as: 'product',
+                  attributes: ['title', 'description', 'category'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
 
     const formattedResponse = usersWithOrders.map(user => ({
@@ -254,5 +279,20 @@ exports.getOrdersByUser = async (req, res) => {
   } catch (error) {
     console.error("Error fetching orders by user:", error);
     res.status(500).json({ message: "Failed to fetch orders by user", error });
+  }
+};
+exports.deleteOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const deleted = await Order.destroy({ where: { id: orderId } });
+
+    if (deleted) {
+      res.status(200).json({ message: "Order deleted successfully." });
+    } else {
+      res.status(404).json({ message: "Order not found." });
+    }
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({ message: "Failed to delete order.", error });
   }
 };

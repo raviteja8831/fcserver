@@ -133,3 +133,57 @@ exports.updateSupplyDate = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+// Update user details
+exports.updateUserDetails = async (req, res) => {
+  try {
+    const { id, username, email, password } = req.body;
+    if (!id) {
+      return res.status(400).send({ message: "User ID is required!" });
+    }
+
+    // Find user by primary key
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).send({ message: "User not found!" });
+    }
+
+    // Update fields if provided
+    if (username) {
+      user.username = username;
+    }
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      // Hash the new password if provided
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+
+    res.status(200).send({ message: "User details updated successfully!" });
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    res.status(500).send({ message: error.message });
+  }
+};
+// Get all users with their roles (excluding passwords)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          attributes: ["name"]
+        }
+      ]
+    });
+
+    res.status(200).send(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send({ message: error.message });
+  }
+};

@@ -14,6 +14,8 @@ module.exports = (app) => {
   router.get("/", orders.findAll);
   router.get("/user/:user_id", orders.findByUserId);
   router.put('/:id', orders.updateOrder);
+  router.delete('/:id', orderController.deleteOrder);
+
   app.use("/api/orders", router);
   router.get("/by-user", orders.getOrdersByUser);
 
